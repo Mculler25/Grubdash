@@ -84,6 +84,23 @@ const read = (req, res, next) => {
   res.json({ data: dish });
 };
 
+const update = (req, res, next) => {
+    const { name, description, price, image_url } = req.body.data;
+    const { index , dish } = res.locals;
+
+    const updateDish = {
+        ...dish,
+        name,
+        description,
+        price,
+        image_url
+    }
+
+    dishes[index] = updateDish;
+
+    res.json({data : updateDish})
+}
+
 module.exports = {
   list,
   create: [
@@ -93,4 +110,11 @@ module.exports = {
     create,
   ],
   read : [validateDishExists, read],
+  update : [
+    validateDishExists,
+    validateDataExists,
+    ["name", "description", "price", "image_url"].map(validater),
+    validatePriceIsNumeric,
+    update
+  ]
 };
