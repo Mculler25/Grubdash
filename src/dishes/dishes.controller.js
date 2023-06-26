@@ -30,19 +30,45 @@ const validater = (field) => {
         }
     }
 }
+
+const validatePriceIsNumeric = (req, res, next) => {
+    const { price } = req.body.data;
+    if(typeof price === 'number' && price > 0){
+        next()
+    } else {
+        next({
+            status : 400,
+            message : 'price must be a number greater than zero'
+        })
+    }
+}
 const list = (req, res, next) => {
     res.json({data : dishes})
 }
 
 const create = (req, res, next) => {
+    const { name , description, price, image_url} = req.body.data;
+    
+    const newDish = {
+        id : nextId(),
+        name : name,
+        description : description,
+        price : price,
+        image_url : image_url 
+    }
 
+    //add new dish to dishes array
+    dishes.push(newDish)
+
+    res.status(201).json({data : newDish})
 }
 
 module.exports = {
     list,
     create : [
         validateDataExists, 
-        ['name', 'description', 'price', 'image-url'].map(validater),
+        ['name', 'description', 'price', 'image_url'].map(validater),
+        validatePriceIsNumeric,
         create
     ]
 }
