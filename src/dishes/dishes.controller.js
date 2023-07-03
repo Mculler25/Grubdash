@@ -47,7 +47,7 @@ const validateDishExists = (req, res, next) => {
   const { dishId } = req.params;
   const index = dishes.findIndex((dish) => dish.id === dishId);
 
-  if (index === -1) {
+  if (index < 0) {
     return next({
       status: 404,
       message: `Dish ${dishId} not found.`,
