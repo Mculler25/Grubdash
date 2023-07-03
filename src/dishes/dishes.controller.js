@@ -47,16 +47,16 @@ const validateDishExists = (req, res, next) => {
   const { dishId } = req.params;
   const index = dishes.findIndex((dish) => dish.id === dishId);
 
-  if (index < 0) {
-    next({
+  if (index === -1) {
+    return next({
       status: 404,
-      message: `No dish with ${id} as an id`,
+      message: `Dish ${dishId} not found.`,
     });
-  } else {
+  } 
     res.locals.index = index;
     res.locals.dish = dishes[index];
     next();
-  }
+  
 };
 const list = (req, res, next) => {
   res.json({ data: dishes });
@@ -85,22 +85,22 @@ const read = (req, res, next) => {
 };
 
 const update = (req, res, next) => {
-    const { name, description, price, image_url } = req.body.data;
-    const { index , dish } = res.locals;
+  const { name, description, price, image_url } = req.body.data;
+  const { index, dish } = res.locals;
 
-    const updateDish = {
-        ...dish,
-        name,
-        description,
-        price,
-        image_url
-    }
+  const updatedDish = {
+    ...dish,
+    name,
+    description,
+    price,
+    image_url,
+  };
 
-    dishes[index] = updateDish;
+  dishes[index] = updatedDish;
 
-    res.json({data : updateDish})
-}
+  res.json({ data: updatedDish });
 
+};
 module.exports = {
   list,
   create: [
