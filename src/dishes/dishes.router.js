@@ -1,4 +1,4 @@
-const methodNotAllowed = require('../utils/methodNotAllowed');
+const methodNotAllowed = require('../errors/methodNotAllowed');
 const router = require("express").Router();
 const controller = require('./dishes.controller');
 

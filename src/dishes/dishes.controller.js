@@ -74,7 +74,7 @@ const create = (req, res, next) => {
     image_url: image_url,
   };
 
-  //add new dish to dishes array
+  
   dishes.push(newDish);
 
   res.status(201).json({ data: newDish });
@@ -86,20 +86,29 @@ const read = (req, res, next) => {
 };
 
 const update = (req, res, next) => {
-  const { name, description, price, image_url } = req.body.data;
+  const { dishId } = req.params;
+  const { name, description, price, image_url , id} = req.body.data;
   const { index, dish } = res.locals;
 
-  const updatedDish = {
-    ...dish,
-    name,
-    description,
-    price,
-    image_url,
-  };
+  if(id && id !== dishId){
+    next({
+      status: 400,
+      message: `the id ${id} does not match route id ${dishId}`
+    })
+  } else {
+    const updatedDish = {
+      ...dish,
+      name,
+      description,
+      price,
+      image_url,
+    };
+  
+    dishes[index] = updatedDish;
+  
+    res.json({ data: updatedDish });
+  }
 
-  dishes[index] = updatedDish;
-
-  res.json({ data: updatedDish });
 
 };
 module.exports = {
