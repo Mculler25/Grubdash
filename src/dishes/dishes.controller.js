@@ -45,17 +45,18 @@ const validatePriceIsNumeric = (req, res, next) => {
 
 const validateDishExists = (req, res, next) => {
   const { dishId } = req.params;
-  const index = dishes.findIndex((dish) => dish.id === dishId);
+  const index = dishes.findIndex(dish => dish.id == dishId);
 
   if (index < 0) {
     return next({
       status: 404,
       message: `Dish ${dishId} not found.`,
     });
-  } 
+  } else {
     res.locals.index = index;
     res.locals.dish = dishes[index];
     next();
+  }
   
 };
 const list = (req, res, next) => {
@@ -111,8 +112,8 @@ module.exports = {
   ],
   read : [validateDishExists, read],
   update : [
-    validateDishExists,
     validateDataExists,
+    validateDishExists,
     ["name", "description", "price", "image_url"].map(validater),
     validatePriceIsNumeric,
     update

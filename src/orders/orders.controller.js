@@ -38,7 +38,7 @@ const validateOrderExists = (req, res, next) => {
     if (index < 0) {
       next({
         status: 404,
-        message: `No Order with ${id} as an id`,
+        message: `No Order with ${orderId} as an id`,
       });
     } else {
       res.locals.index = index;
@@ -51,45 +51,17 @@ const list = (req, res, next) => {
   res.json({ data: orders });
 };
 
-const validateDishes = (req , res ,next) => {
-    const { dishes } = req.body.data;
-    if (!dishes) {
-      next({
-        status : 400 ,
-        message : 'dishes is missing'
-      })
-    } else if (!Array.isArray(dishes)) {
-      next({
-        status : 400 ,
-        message : 'dishes is not an array'
-      })
-    }else if (dishes.length === 0) {
-      next({
-        status : 400 ,
-        message : 'dishes is empty'
-      })
-    } else {
-      next();
-    }
-
+const isOrderPending = (req, res, next) => {
+  const { order } = res.locals;
+  if (order.status === 'pending'){
+    next();
+  } else {
+    next({
+      status : 400,
+      message : 'order must be pending'
+    })
+  }
 }
-const validateDishQuantities = (req , res, next) => {
-    const { dishes } = req.body.data
-    dishes.forEach((dish, index) => {
-      if (!dish.quantity) {
-        next({
-          status : 400,
-          message : `Dish ${index + 1} must have a quantity that is an integer greater than 0`
-        })
-      }else if (typeof dish.quantity !== 'number' || !Number.isInteger(dish.quantity) || dish.quantity <= 0) {
-        next({
-          status : 400,
-          message : `Dish ${index + 1} must have a quantity that is an integer greater than 0`
-        })
-      }
-  })
-}
-
 
 const create = (req, res, next) => {
   const { deliverTo, mobileNumber, status, dishes } = req.body.data;
@@ -139,17 +111,14 @@ module.exports = {
   create: [
     validateDataExists,
     ["deliverTo", "mobileNumber"].map(validater),
-    validateDishes('dishes'),
     create
   ],
   read : [validateOrderExists, read],
   update : [
-    validateOrderExists,
     validateDataExists,
+    validateOrderExists,
     ['deliverTo', 'mobileNumber', 'status'].map(validater),
-    validateDishes('dishes'),
-    validateDishQuantities,
     update
   ],
-  destroy : [validateOrderExists, destroy]
+  destroy : [validateOrderExists, isOrderPending, destroy]
 };
