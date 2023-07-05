@@ -90,17 +90,6 @@ const quantityValidation = (req ,res ,next) => {
   next();
 }
 
-const dataIdMatches = (req, res ,next) => {
-  const { orderId } = req.params;
-  if(req.body.data[id] !== orderId && req.body.data[id]){
-    next({
-      status: 400,
-      message: `Order id does not match route id. Order id: ${id}, Route id: ${orderId}`,
-    });
-  } else {
-    next();
-  }
-}
 
 const list = (req, res, next) => {
   res.json({ data: orders });
@@ -186,7 +175,6 @@ module.exports = {
     validateOrderExists,
     dishesValidation('dishes'),
     quantityValidation,
-    // dataIdMatches,
     ['deliverTo', 'mobileNumber', 'status'].map(validater),
     update
   ],
